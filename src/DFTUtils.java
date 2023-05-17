@@ -5,34 +5,18 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-public class Main {
+public class DFTUtils {
 
+    public static double findMax(double[] arr) {
+        double max = arr[0];
 
-    public static void main(String[] args) throws IOException {
-
-        double fs = 50;
-        double[] signal = new double[10 * (int) fs];
-        double[] time = new double[10 * (int) fs];
-
-        for (int i = 0; i < 10 * fs; i++) {
-            time[i] = i / fs;
-            signal[i] = Math.sin(2 * Math.PI * 5 * time[i]);
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
+            }
         }
-        double[] spectrum = dftSpectrum(signal, 50);
-        double[] freqs = dftFreq(signal, 50);
 
-        System.out.println(signal.length);
-        System.out.println(spectrum.length);
-
-        writeCSV("time.csv", ";", "\n", ',',
-                time,
-                signal
-        );
-
-        writeCSV("freq.csv", ";", "\n", ',',
-                freqs,
-                spectrum
-        );
+        return max;
     }
 
     public static double findMin(double[] arr) {
@@ -45,18 +29,6 @@ public class Main {
         }
 
         return min;
-    }
-
-    public static double findMax(double[] arr) {
-        double max = arr[0];
-
-        for (int i = 1; i < arr.length; i++) {
-            if (arr[i] > max) {
-                max = arr[i];
-            }
-        }
-
-        return max;
     }
 
     public static void writeCSV(String fileName, String columnDelim, String rowDelim, char decimalPoint, double[]... arrays) throws IOException {
@@ -101,6 +73,24 @@ public class Main {
             frequencies[k] = k * samplingFrequency / N;
         }
         return frequencies;
+    }
+
+    public static double[] normalize(double[] signal){
+
+        double sum = 0;
+        for(int i=0 ; i<signal.length ; i++){
+            sum += signal[i];
+        }
+        sum /= signal.length;
+
+        for(int i=0 ; i<signal.length ; i++){
+            signal[i] = signal[i]-sum;
+        }
+        double dif = findMax(signal)- findMin(signal);
+        for(int i=0 ; i<signal.length ; i++){
+            signal[i] = signal[i]/dif;
+        }
+        return signal;
     }
 
 }
